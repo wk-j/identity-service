@@ -36,16 +36,5 @@ type Extensions =
             options.RequireHttpsMetadata <- false
             options.SaveTokens <- true
             options.Events <- so.Events
+            options.GetClaimsFromUserInfoEndpoint <- true
           )
-           .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, fun options ->
-                options.TokenValidationParameters <-
-                    TokenValidationParameters(
-                        ValidateIssuer = false,
-                        ValidateAudience = false,
-                        ValidateLifetime =false
-                        // ValidateIssuerSigningKey = true,
-                        // ValidIssuer = so.Authority
-                    )
-                options.ForwardSignIn <- OpenIdConnectDefaults.AuthenticationScheme
-                options.ForwardSignOut <- OpenIdConnectDefaults.AuthenticationScheme
-           )

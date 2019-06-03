@@ -7,6 +7,7 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Authentication.OpenIdConnect;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.HttpsPolicy;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Extensions.Configuration;
@@ -29,7 +30,7 @@ namespace WebApi {
                 Authority = "http://localhost:8080/auth/realms/master",
                 ClientId = "web-api",
                 ClientSecret = "b69692dd-4097-4e8c-9671-d4636fb46737",
-                CallbackPath = "/login",
+                CallbackPath = new PathString("/login"),
                 Events = new OpenIdConnectEvents {
                     OnTokenResponseReceived = context => {
                         var ticket = context.ProtocolMessage.AccessToken;
@@ -39,8 +40,6 @@ namespace WebApi {
                     }
                 }
             });
-
-
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -54,7 +53,6 @@ namespace WebApi {
             }
 
             app.UseAuthentication();
-            // app.UseHttpsRedirection();
             app.UseMvc();
         }
     }
