@@ -4,6 +4,9 @@ open Microsoft.Extensions.DependencyInjection
 open System.Runtime.CompilerServices
 open Microsoft.AspNetCore.Http
 open Microsoft.IdentityModel.Protocols.OpenIdConnect
+open Microsoft.AspNetCore.Authentication.OpenIdConnect
+open Microsoft.AspNetCore.Authentication.JwtBearer
+open Microsoft.IdentityModel.Tokens
 
 [<CLIMutable>]
 type IdentityServiceOptions =  {
@@ -11,6 +14,7 @@ type IdentityServiceOptions =  {
     ClientId: string
     ClientSecret: string
     CallbackPath: string
+    Events: OpenIdConnectEvents
 }
 
 [<Extension>]
@@ -20,14 +24,28 @@ type Extensions =
         services
           .AddAuthentication(fun options ->
             options.DefaultScheme <- "Cookies"
-            options.DefaultChallengeScheme <- "oidc"
+            options.DefaultChallengeScheme <- OpenIdConnectDefaults.AuthenticationScheme
           )
           .AddCookie("Cookies")
-          .AddOpenIdConnect("oidc", fun options ->
+          .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, fun options ->
             options.Authority <- so.Authority
             options.ClientId <- so.ClientId
             options.ClientSecret <- so.ClientSecret
             options.CallbackPath <- PathString(so.CallbackPath)
             options.ResponseType <- OpenIdConnectResponseType.CodeIdTokenToken
             options.RequireHttpsMetadata <- false
+            options.SaveTokens <- true
+            options.Events <- so.Events
           )
+           .AddJwtBearer(JwtBearerDefaults.AuthenticationScheme, fun options ->
+                options.TokenValidationParameters <-
+                    TokenValidationParameters(
+                        ValidateIssuer = false,
+                        ValidateAudience = false,
+                        ValidateLifetime =false
+                        // ValidateIssuerSigningKey = true,
+                        // ValidIssuer = so.Authority
+                    )
+                options.ForwardSignIn <- OpenIdConnectDefaults.AuthenticationScheme
+                options.ForwardSignOut <- OpenIdConnectDefaults.AuthenticationScheme
+           )
