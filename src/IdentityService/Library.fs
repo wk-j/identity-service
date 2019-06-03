@@ -10,14 +10,13 @@ type IdentityServiceOptions =  {
     Authority: string
     ClientId: string
     ClientSecret: string
-    SignedInRedirectUri: string
     CallbackPath: string
 }
 
 [<Extension>]
 type Extensions =
     [<Extension>]
-    static member AddIdentityService(services: IServiceCollection, options: IdentityServiceOptions) =
+    static member AddIdentityService(services: IServiceCollection, so: IdentityServiceOptions) =
         services
           .AddAuthentication(fun options ->
             options.DefaultScheme <- "Cookies"
@@ -25,10 +24,10 @@ type Extensions =
           )
           .AddCookie("Cookies")
           .AddOpenIdConnect("oidc", fun options ->
-            options.Authority <- options.Authority
-            options.ClientId <- options.ClientId
-            options.ClientSecret <- options.ClientSecret
+            options.Authority <- so.Authority
+            options.ClientId <- so.ClientId
+            options.ClientSecret <- so.ClientSecret
+            options.CallbackPath <- PathString(so.CallbackPath)
             options.ResponseType <- OpenIdConnectResponseType.CodeIdTokenToken
-            options.CallbackPath <- options.CallbackPath
+            options.RequireHttpsMetadata <- false
           )
-
