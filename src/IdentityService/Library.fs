@@ -1,4 +1,6 @@
 ﻿namespace IdentityService
+
+open Microsoft.IdentityModel.Tokens
 open Microsoft.IdentityModel.Protocols.OpenIdConnect
 open Microsoft.Extensions.DependencyInjection
 open System.Runtime.CompilerServices
@@ -7,6 +9,7 @@ open Microsoft.IdentityModel.Protocols.OpenIdConnect
 open Microsoft.AspNetCore.Authentication.OpenIdConnect
 open Microsoft.AspNetCore.Authentication.JwtBearer
 open Microsoft.IdentityModel.Tokens
+open System.Text
 
 [<CLIMutable>]
 type IdentityServiceOptions =  {
@@ -25,6 +28,8 @@ type Extensions =
           .AddAuthentication(fun options ->
             options.DefaultScheme <- "Cookies"
             options.DefaultChallengeScheme <- OpenIdConnectDefaults.AuthenticationScheme
+            // options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
+            // options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme
           )
           .AddCookie("Cookies")
           .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, fun options ->

@@ -14,6 +14,8 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Logging;
+using Microsoft.IdentityModel.Tokens;
 using Newtonsoft.Json;
 
 namespace WebApi {
@@ -39,12 +41,26 @@ namespace WebApi {
                         return Task.CompletedTask;
                     }
                 }
+            }).AddJwtBearer(cfg => {
+                cfg.RequireHttpsMetadata = false;
+                cfg.Authority = "http://localhost:8080/auth/realms/master";
+                cfg.IncludeErrorDetails = true;
+                cfg.TokenValidationParameters = new TokenValidationParameters() {
+                    ValidateAudience = false,
+                    ValidateIssuerSigningKey = true,
+                    ValidateIssuer = true,
+                    ValidIssuer = "http://localhost:8080/auth/realms/master",
+                    ValidateLifetime = true
+                };
+                cfg.Events = new JwtBearerEvents() {
+                    OnAuthenticationFailed = c => {
+                        c.NoResult();
+                        c.Response.StatusCode = 401;
+                        c.Response.ContentType = "text/plain";
+                        return c.Response.WriteAsync(c.Exception.ToString());
+                    }
+                };
             });
-            // .AddJwtBearer(options => {
-            //     options.Authority = "http://localhost:8080/auth/realms/master";
-            //     //options.Audience = "";
-            //     options.RequireHttpsMetadata = false;
-            // });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
@@ -56,6 +72,8 @@ namespace WebApi {
             } else {
                 app.UseHsts();
             }
+
+            IdentityModelEventSource.ShowPII = true;
 
             app.UseAuthentication();
             app.UseMvc();
