@@ -40,6 +40,11 @@ namespace WebApi {
                     }
                 }
             });
+            // .AddJwtBearer(options => {
+            //     options.Authority = "http://localhost:8080/auth/realms/master";
+            //     //options.Audience = "";
+            //     options.RequireHttpsMetadata = false;
+            // });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
