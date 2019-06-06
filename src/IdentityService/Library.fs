@@ -28,10 +28,27 @@ type Extensions =
           .AddAuthentication(fun options ->
             options.DefaultScheme <- "Cookies"
             options.DefaultChallengeScheme <- OpenIdConnectDefaults.AuthenticationScheme
-            // options.DefaultAuthenticateScheme <- JwtBearerDefaults.AuthenticationScheme
-            // options.DefaultChallengeScheme <- JwtBearerDefaults.AuthenticationScheme
           )
           .AddCookie("Cookies")
+          .AddJwtBearer(fun cfg ->
+                cfg.RequireHttpsMetadata <- false
+                cfg.Authority <- so.Authority
+                cfg.IncludeErrorDetails <- true
+                cfg.TokenValidationParameters <-
+                    TokenValidationParameters(
+                        ValidateAudience = false,
+                        ValidateIssuerSigningKey = true,
+                        ValidateIssuer = true,
+                        ValidIssuer = so.Authority,
+                        ValidateLifetime = true
+                    )
+                cfg.Events <- JwtBearerEvents()
+                cfg.Events.OnAuthenticationFailed <- fun c ->
+                    c.NoResult();
+                    c.Response.StatusCode <- 401
+                    c.Response.ContentType <- "text/plain"
+                    c.Response.WriteAsync(c.Exception.ToString())
+          )
           .AddOpenIdConnect(OpenIdConnectDefaults.AuthenticationScheme, fun options ->
             options.Authority <- so.Authority
             options.ClientId <- so.ClientId

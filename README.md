@@ -1,6 +1,6 @@
 ## Identity Service
 
-Authentication against Alfresco's Identity Service with .NET
+Authenticate against Alfresco's Identity Service with .NET
 
 [![Build Status](https://dev.azure.com/wk-j/identity-service/_apis/build/status/wk-j.identity-service?branchName=master)](https://dev.azure.com/wk-j/identity-service/_build/latest?definitionId=45&branchName=master)
 [![NuGet](https://img.shields.io/nuget/v/wk.IdentityService.svg)](https://www.nuget.org/packages/wk.IdentityService)

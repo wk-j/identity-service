@@ -41,26 +41,27 @@ namespace WebApi {
                         return Task.CompletedTask;
                     }
                 }
-            }).AddJwtBearer(cfg => {
-                cfg.RequireHttpsMetadata = false;
-                cfg.Authority = "http://localhost:8080/auth/realms/master";
-                cfg.IncludeErrorDetails = true;
-                cfg.TokenValidationParameters = new TokenValidationParameters() {
-                    ValidateAudience = false,
-                    ValidateIssuerSigningKey = true,
-                    ValidateIssuer = true,
-                    ValidIssuer = "http://localhost:8080/auth/realms/master",
-                    ValidateLifetime = true
-                };
-                cfg.Events = new JwtBearerEvents() {
-                    OnAuthenticationFailed = c => {
-                        c.NoResult();
-                        c.Response.StatusCode = 401;
-                        c.Response.ContentType = "text/plain";
-                        return c.Response.WriteAsync(c.Exception.ToString());
-                    }
-                };
             });
+            // .AddJwtBearer(cfg => {
+            //     cfg.RequireHttpsMetadata = false;
+            //     cfg.Authority = "http://localhost:8080/auth/realms/master";
+            //     cfg.IncludeErrorDetails = true;
+            //     cfg.TokenValidationParameters = new TokenValidationParameters() {
+            //         ValidateAudience = false,
+            //         ValidateIssuerSigningKey = true,
+            //         ValidateIssuer = true,
+            //         ValidIssuer = "http://localhost:8080/auth/realms/master",
+            //         ValidateLifetime = true
+            //     };
+            //     cfg.Events = new JwtBearerEvents() {
+            //         OnAuthenticationFailed = c => {
+            //             c.NoResult();
+            //             c.Response.StatusCode = 401;
+            //             c.Response.ContentType = "text/plain";
+            //             return c.Response.WriteAsync(c.Exception.ToString());
+            //         }
+            //     };
+            // });
 
             services.AddMvc()
                 .SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
